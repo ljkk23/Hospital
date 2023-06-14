@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,6 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @TableName("sys_doctor")
 @ApiModel(value = "Doctor对象", description = "医院用户表")
 public class Doctor implements Serializable {
@@ -31,7 +33,7 @@ public class Doctor implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("主键")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty("部门id")
@@ -80,18 +82,7 @@ public class Doctor implements Serializable {
     @ApiModelProperty("如果是医生就是挂号费")
     private Integer amount;
 
+    @ApiModelProperty("医生的简介")
+    private String introduce;
 
-    public Doctor(Long deptId, String title, String userName, String password, String type, String status, String email, String phonenumber, String sex, String avatar, Integer amount) {
-        this.deptId = deptId;
-        this.title = title;
-        this.userName = userName;
-        this.password = password;
-        this.status = status;
-        this.email = email;
-        this.phonenumber = phonenumber;
-        this.sex = sex;
-        this.avatar = avatar;
-        this.amount = amount;
-        this.type=type;
-    }
 }

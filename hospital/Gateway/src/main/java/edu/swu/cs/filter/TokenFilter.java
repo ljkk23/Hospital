@@ -33,7 +33,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
             return exchange.getResponse().setComplete();
         }
         //token解析成功但是出错
-        if (!(check.contains("doctor-")|| check.contains("user-"))) {
+        if (!(check.contains("doctor-")|| check.contains("user-") || check.contains("visitor"))) {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }

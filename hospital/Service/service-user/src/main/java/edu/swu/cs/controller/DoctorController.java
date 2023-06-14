@@ -8,6 +8,8 @@ import edu.swu.cs.domain.securityEntity.Role;
 import edu.swu.cs.entity.Doctor;
 import edu.swu.cs.entity.DoctorRole;
 import edu.swu.cs.entity.VO.DoctorVO;
+import edu.swu.cs.entity.VO.QueryDoctorVO;
+import edu.swu.cs.entity.model.InquireDoctorModel;
 import edu.swu.cs.enums.AppHttpCodeEnum;
 import edu.swu.cs.securityService.IRoleService;
 import edu.swu.cs.service.IDoctorRoleService;
@@ -18,11 +20,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Objects;
@@ -44,24 +42,37 @@ public class DoctorController {
     @Autowired
     private IDoctorRoleService doctorRoleService;
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name="deptId",value="部门id",dataType="Long",example="2"),
-            @ApiImplicitParam(name="title",value="医生职称",dataType="String")}
-    )
-    @PreAuthorize("hasAnyAuthority('system:user:add')")
-    @PostMapping("/addDoctor")
-    //TODO:实现事务增加doctor和新增doctor对应的角色
-    public ResponseResult addDoctor(Doctor doctor){
+    /**
+     * 医生注册账号
+     * @param doctor
+     * @return
+     */
+    @PostMapping("/Register")
+    public ResponseResult RegisterDoctor(@RequestBody Doctor doctor){
 
         doctor.setPassword(new BCryptPasswordEncoder().encode(doctor.getPassword()));
         boolean saveDoctor = doctorService.save(doctor);
-        boolean saveDoctorAndRole = doctorRoleService.save(new DoctorRole(doctor.getId(), Long.valueOf(doctor.getType())));
-        if (!(saveDoctor || saveDoctorAndRole)){
-
+        if (!saveDoctor){
             return ResponseResult.errorResult(AppHttpCodeEnum.SYSTEM_ERROR,"插入数据库出错");
         }
-        return ResponseResult.okResult();
+        return ResponseResult.okResult("注册成功");
     }
+
+
+
+    /**
+     * 分页查询医生的信息
+     * @param
+     * @return
+     */
+    @PostMapping("/getDoctorPageInfo")
+    public ResponseResult getDoctor(@RequestBody InquireDoctorModel doctorModel){
+        QueryDoctorVO pageDoctor = doctorService.getPageDoctor(doctorModel);
+        return ResponseResult.okResult(pageDoctor);
+    }
+
+
+
     @GetMapping("FeignGetDoctorInfo")
     public DoctorVO FeignGetDoctorInfo(Long id){
         Doctor doctor = doctorService.getById(id);

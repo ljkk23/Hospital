@@ -3,13 +3,12 @@ package edu.swu.cs.entity.VO;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 @Data
-
+@AllArgsConstructor
+@NoArgsConstructor
 public class DoctorVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -40,6 +39,9 @@ public class DoctorVO implements Serializable {
 
     @ApiModelProperty("如果是医生就是挂号费")
     private Integer amount;
+
+    @ApiModelProperty("医生的简介")
+    private String introduce;
 
 
 }

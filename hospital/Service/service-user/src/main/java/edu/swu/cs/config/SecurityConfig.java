@@ -18,6 +18,13 @@ import javax.annotation.Resource;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    private static final String[] AUTH_LIST = {
+            // -- swagger ui
+            "**/swagger-resources/**",
+            "/swagger-ui.html",
+            "/v2/api-docs",
+            "/webjars/**"
+    };
     @Autowired
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
     @Override

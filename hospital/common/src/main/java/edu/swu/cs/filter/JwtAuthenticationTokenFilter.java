@@ -19,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 
 @Component
@@ -28,7 +29,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private RedisCache redisCache;
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-        System.out.println(httpServletRequest.getRequestURI());
+        //System.out.println(httpServletRequest.getRequestURI());
         long startTime=System.currentTimeMillis();
         //白名单：login和fegin接口
         if (Objects.equals(httpServletRequest.getRequestURI(), "/security-auth/login") ||
@@ -40,6 +41,10 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 || Objects.equals(httpServletRequest.getRequestURI(),"/service-ware/ware/lockWare")
                 || Objects.equals(httpServletRequest.getRequestURI(),"/service-ware/ware/getWareByProductId")
                 || Objects.equals(httpServletRequest.getRequestURI(),"/service-ware/ware/updateHotOrderWare")
+                || httpServletRequest.getRequestURI().contains("swagger-resources")
+                || httpServletRequest.getRequestURI().contains("swagger-ui.html")
+                || httpServletRequest.getRequestURI().contains("/v2/api-docs")
+                || httpServletRequest.getRequestURI().contains("webjars")
         ){
             filterChain.doFilter(httpServletRequest,httpServletResponse);
             return;
@@ -52,29 +57,34 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             throw new SystemException(AppHttpCodeEnum.NO_OPERATOR_AUTH);
         }
-        String[] userIdArray =  userID.split("-");
-        String realUserId=userIdArray[1];
-        //userIDVO="user-"+userID;
-        //redisCache.setCacheObject("Login:"+userIDVO,userDetailsimpl);
-        UserDetailsImpl userDetails =null;
-        //通过redis获取登陆的时候存的UserDetailsImpl
-        if (userID.contains("doctor-")){
-            userDetails= redisCache.getCacheObject("Login:" + "doctor-"+realUserId);
-        } else if (userID.contains("user-")) {
-            userDetails=redisCache.getCacheObject("Login:" + "user-"+realUserId);
+        UserDetailsImpl userDetails = null;
+        boolean isVisitor=false;
+        if(userID.contains("visitor")){
+            isVisitor=true;
+        }else {
+            String[] userIdArray = userID.split("-");
+            String realUserId = userIdArray[1];
+            //通过redis获取登陆的时候存的UserDetailsImpl
+            if (userID.contains("doctor-")) {
+                userDetails = redisCache.getCacheObject("Login:" + "doctor-" + realUserId);
+            } else if (userID.contains("user-")) {
+                userDetails = redisCache.getCacheObject("Login:" + "user-" + realUserId);
+            }
         }
-        if (Objects.isNull(userDetails)){
+        if (Objects.isNull(userDetails) && !isVisitor) {
             //redis中缓存过期，登陆超时
-            ResponseResult responseResult=ResponseResult.errorResult(AppHttpCodeEnum.NEED_LOGIN);
-            WebUtils.renderString(httpServletResponse,JSON.toJSONString(responseResult));
+            ResponseResult responseResult = ResponseResult.errorResult(AppHttpCodeEnum.NEED_LOGIN);
+            WebUtils.renderString(httpServletResponse, JSON.toJSONString(responseResult));
             return;
         }
-        //将获取的UserDetailsImpl通过UsernamePasswordAuthenticationToken包装存入SecurityContext中
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken;
+        if(!isVisitor) {
+            //将获取的UserDetailsImpl通过UsernamePasswordAuthenticationToken包装存入SecurityContext中
+            usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        }else {
+            usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, null);
+        }
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-        long endTime=System.currentTimeMillis(); //获取结束时间
-
-        System.out.println("filter程序运行时间： "+(endTime-startTime)+"ms");
         filterChain.doFilter(httpServletRequest,httpServletResponse);
 
     }

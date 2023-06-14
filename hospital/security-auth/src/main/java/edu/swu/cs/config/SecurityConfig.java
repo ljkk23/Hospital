@@ -2,7 +2,6 @@ package edu.swu.cs.config;
 
 import edu.swu.cs.SecurityHandler.AccessDeniedHandlerImpl;
 import edu.swu.cs.SecurityHandler.AuthenticationEntryPointImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,11 +23,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private AccessDeniedHandlerImpl accessDeniedHandler;
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Override
-    protected void configure(   HttpSecurity http) throws Exception {
+    protected void configure(HttpSecurity http) throws Exception {
         http
                 //关闭csrf
                 .csrf().disable()
@@ -57,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                    out.flush();
 //                    out.close();
 //                })
-               //  除上面外的所有请求全部不需要认证即可访问
+        //  除上面外的所有请求全部不需要认证即可访问
 //                .permitAll();
 
         //关闭默认的注销接口
@@ -65,13 +65,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //添加自定义认证失败异常处理
         http.exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
-                        .accessDeniedHandler(accessDeniedHandler);
+                .accessDeniedHandler(accessDeniedHandler);
         //添加jwt认证过滤器
 
         //http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
         //允许跨域
         http.cors();
     }
+
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
