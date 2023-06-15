@@ -35,6 +35,7 @@ public class DoctorFeignVO implements Serializable {
     @ApiModelProperty("邮箱")
     private String email;
 
+
     @ApiModelProperty("手机号")
     private String phonenumber;
 

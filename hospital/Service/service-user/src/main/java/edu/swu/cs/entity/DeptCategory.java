@@ -36,7 +36,7 @@ public class DeptCategory implements Serializable {
     private Long parentId;
 
     @ApiModelProperty("更新人")
-    private Long updateBy;
+    private String updateBy;
 
     @ApiModelProperty("更新时间")
       @TableField(fill = FieldFill.INSERT_UPDATE)

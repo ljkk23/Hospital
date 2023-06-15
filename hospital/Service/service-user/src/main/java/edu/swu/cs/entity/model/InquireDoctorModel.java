@@ -16,6 +16,6 @@ public class InquireDoctorModel extends PageEntity {
 
     private String title;
 
-    private String userName;
+    private String realName;
 
 }

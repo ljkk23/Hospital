@@ -25,6 +25,9 @@ public class UserDetailsImpl implements UserDetails, Serializable {
         this.user = user;
         this.permissions = permissions;
     }
+    public UserDetailsImpl(UserVO user) {
+        this.user = user;
+    }
 
     //存储SpringSecurity所需要的权限信息的集合
     @JSONField(serialize = false)

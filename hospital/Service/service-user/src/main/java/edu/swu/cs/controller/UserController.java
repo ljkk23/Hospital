@@ -6,15 +6,14 @@ import edu.swu.cs.domain.ResponseResult;
 import edu.swu.cs.entity.Doctor;
 import edu.swu.cs.entity.Patient;
 import edu.swu.cs.entity.User;
+import edu.swu.cs.entity.model.AddUserModel;
 import edu.swu.cs.enums.AppHttpCodeEnum;
 import edu.swu.cs.service.IUserService;
+import edu.swu.cs.utils.BeanCopyUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -30,13 +29,21 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+
+    /**
+     * 用户注册账户
+     * @param addUserModel
+     * @return
+     */
     @PostMapping("/addUser")
-    public ResponseResult addUser(User user){
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-        if (!userService.save(user)){
-            return ResponseResult.errorResult(AppHttpCodeEnum.SYSTEM_ERROR,"插入数据库出错");
-        }
-        return ResponseResult.okResult();
+    public ResponseResult addUser(@RequestBody AddUserModel addUserModel){
+        return userService.addUser(addUserModel);
+    }
+
+    @PostMapping("/updateUserInfo")
+    public ResponseResult updateUserInfo(@RequestBody User user){
+
+        return userService.updateUserInfo(user);
     }
 
     @GetMapping("/getUserByFeign")

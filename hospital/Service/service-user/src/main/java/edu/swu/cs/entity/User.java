@@ -36,12 +36,11 @@ public class User implements Serializable {
       @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    public User(String userName, String password, String cardId, String status, String email, String phonenumber, String sex, String avatar) {
+    public User(String userName, String password, String cardId, String status, String phonenumber, String sex, String avatar) {
         this.userName = userName;
         this.password = password;
         this.cardId = cardId;
         this.status = status;
-        this.email = email;
         this.phonenumber = phonenumber;
         this.sex = sex;
         this.avatar = avatar;
@@ -58,9 +57,6 @@ public class User implements Serializable {
 
     @ApiModelProperty("账号状态（0正常 1停用）")
     private String status;
-
-    @ApiModelProperty("邮箱")
-    private String email;
 
     @ApiModelProperty("手机号")
     private String phonenumber;
@@ -84,6 +80,5 @@ public class User implements Serializable {
 
     @ApiModelProperty("删除标志（0代表未删除，1代表已删除）")
     private Integer delFlag;
-
 
 }

@@ -10,6 +10,9 @@ import edu.swu.cs.entity.DoctorRole;
 import edu.swu.cs.entity.VO.DoctorVO;
 import edu.swu.cs.entity.VO.QueryDoctorVO;
 import edu.swu.cs.entity.model.InquireDoctorModel;
+import edu.swu.cs.entity.model.ModifyPasswordModel;
+import edu.swu.cs.entity.model.UpdateDoctorInfoByUserModel;
+import edu.swu.cs.entity.model.UpdateDoctorInfoModel;
 import edu.swu.cs.enums.AppHttpCodeEnum;
 import edu.swu.cs.securityService.IRoleService;
 import edu.swu.cs.service.IDoctorRoleService;
@@ -17,6 +20,7 @@ import edu.swu.cs.service.IDoctorService;
 import edu.swu.cs.utils.BeanCopyUtils;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -34,6 +38,7 @@ import java.util.Objects;
  * @since 2022-11-10
  */
 @RestController
+@Slf4j
 @RequestMapping("/doctor")
 public class DoctorController {
     @Autowired
@@ -47,15 +52,53 @@ public class DoctorController {
      * @param doctor
      * @return
      */
-    @PostMapping("/Register")
+    @PreAuthorize("hasAnyAuthority('system:user:add')")
+    @PostMapping("/addDoctorRole")
     public ResponseResult RegisterDoctor(@RequestBody Doctor doctor){
+        return doctorService.addDoctorAndRole(doctor);
+    }
 
-        doctor.setPassword(new BCryptPasswordEncoder().encode(doctor.getPassword()));
-        boolean saveDoctor = doctorService.save(doctor);
-        if (!saveDoctor){
-            return ResponseResult.errorResult(AppHttpCodeEnum.SYSTEM_ERROR,"插入数据库出错");
-        }
-        return ResponseResult.okResult("注册成功");
+    /**
+     * modify Password
+     * @param modifyPasswordModel
+     * @return
+     */
+    @PostMapping("/modifyPassWord")
+    public ResponseResult ModifyPassWord(@RequestBody ModifyPasswordModel modifyPasswordModel){
+        return doctorService.modifyPassword(modifyPasswordModel);
+    }
+
+    /**
+     * 更新医生的个人信息 by root
+     * @param updateDoctorInfo
+     * @return
+     */
+    @PreAuthorize("hasAnyAuthority('system:user:add')")
+    @PostMapping("/updateDoctorInfoByRoot")
+    public ResponseResult updateDoctorInfoByRoot(@RequestBody UpdateDoctorInfoModel updateDoctorInfo){
+        return doctorService.updateDoctorInfoByRoot(updateDoctorInfo);
+    }
+
+
+    /**
+     * 更新医生的个人信息 by user
+     * @param updateDoctorInfo
+     * @return
+     */
+    @PostMapping("/updateDoctorInfoByUser")
+    public ResponseResult updateDoctorInfoByUser(@RequestBody UpdateDoctorInfoByUserModel updateDoctorInfo){
+        return doctorService.updateDoctorInfoByUser(updateDoctorInfo);
+    }
+
+    /**
+     * 逻辑删除医生
+     * @param doctorId
+     * @return
+     */
+    @PostMapping("/deletedDoctor")
+    public ResponseResult deletedDoctor(@RequestBody Long doctorId){
+
+        return doctorService.deleteDoctor(doctorId);
     }
 
 

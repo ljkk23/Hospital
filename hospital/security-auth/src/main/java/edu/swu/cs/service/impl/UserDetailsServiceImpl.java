@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,6 +31,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserVO userVO=new UserVO();
+        List<String> permissions = new ArrayList<>();
         //根据username前缀的不同来分别进行远程调用，就是查表
         if (username.contains("doctor-")){
             String[] userNameArray =  username.split("-");
@@ -39,6 +41,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 throw new RuntimeException("用户不存在");
             }
             userVO = BeanCopyUtils.copyBean(doctorByFeign, UserVO.class);
+            permissions = menuService.getPermissions(userVO.getId());
         } else if (username.contains("user-")) {
             String[] userNameArray =  username.split("-");
             String realUserName=userNameArray[1];
@@ -48,8 +51,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             }
             userVO = BeanCopyUtils.copyBean(userByFeign, UserVO.class);
         }
-        //查询该用户的权限
-        List<String> permissions = menuService.getPermissions(userVO.getId());
 
         return new UserDetailsImpl(userVO,permissions);
 

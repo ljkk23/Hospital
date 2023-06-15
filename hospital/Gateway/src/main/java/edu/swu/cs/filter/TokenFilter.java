@@ -18,7 +18,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
         String value = exchange.getRequest().getPath().value();
         System.out.println(value);
         // 判断是否符合白名单/api/security-auth/login
-        if (value.equals("/api/security-auth/login")) {
+        if (value.equals("/api/security-auth/login")|| value.contains("/api/service-user/user/addUser")) {
             return chain.filter(exchange);
         }
         String token = exchange.getRequest().getHeaders().getFirst("token");

@@ -29,8 +29,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private RedisCache redisCache;
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-        //System.out.println(httpServletRequest.getRequestURI());
-        long startTime=System.currentTimeMillis();
+        System.out.println(httpServletRequest.getRequestURI());
         //白名单：login和fegin接口
         if (Objects.equals(httpServletRequest.getRequestURI(), "/security-auth/login") ||
                 Objects.equals(httpServletRequest.getRequestURI(), "/service-user/doctor/getDoctorByFeign")
@@ -45,6 +44,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 || httpServletRequest.getRequestURI().contains("swagger-ui.html")
                 || httpServletRequest.getRequestURI().contains("/v2/api-docs")
                 || httpServletRequest.getRequestURI().contains("webjars")
+                || httpServletRequest.getRequestURI().contains("/service-user/user/addUser")
         ){
             filterChain.doFilter(httpServletRequest,httpServletResponse);
             return;

@@ -24,10 +24,10 @@ public class SwaggerConfig {
                 .build();
     }
     private ApiInfo apiInfo(){
-        Contact contact=new Contact("西南大学刘剑","https://ljkk23.github.io/HexoBlog/","2156718743@qq.com");
+        Contact contact=new Contact("西南大学","https://ljkk23.github.io/HexoBlog/","2156718743@qq.com");
         return new ApiInfoBuilder()
-                .title("springboot 的博客练手项目")
-                .description("只是作为一个新手java程序员在springboot的练手项目")
+                .title("华迪实训课程")
+                .description("是一个医院的对b端和c端的医院管理系统")
                 .contact(contact)//联系方式
                 .version("1.0")
                 .build();

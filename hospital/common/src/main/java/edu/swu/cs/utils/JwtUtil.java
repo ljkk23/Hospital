@@ -17,7 +17,7 @@ import java.util.UUID;
 public class JwtUtil {
 
     //有效期为
-    public static final Long JWT_TTL = 24*60 * 60 *1000L;// 60 * 60 *1000  一个小时
+    public static final Long JWT_TTL = 10*24*60 * 60 *1000L;// 60 * 60 *1000  一个小时
     //设置秘钥明文
     public static final String JWT_KEY = "liujian";
 
@@ -31,8 +31,15 @@ public class JwtUtil {
      * @param subject token中要存放的数据（json格式）
      * @return
      */
-    public static String createJWT(String subject) {
+    public static String createJWTForWeb(String subject) {
         JwtBuilder builder = getJwtBuilder(subject, null, getUUID());// 设置过期时间
+        return builder.compact();
+    }
+
+    public static String createJWTForApp(String subject) {
+        //60天
+        Long ttl= 60*24*60 * 60 *1000L;
+        JwtBuilder builder = getJwtBuilder(subject, ttl, getUUID());// 设置过期时间
         return builder.compact();
     }
 

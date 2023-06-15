@@ -27,7 +27,4 @@ public class UserVO {
      */
     private String avatar;
 
-    private String sex;
-
-    private String email;
 }

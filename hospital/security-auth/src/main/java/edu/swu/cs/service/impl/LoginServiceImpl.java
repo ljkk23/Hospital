@@ -33,6 +33,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public ResponseResult login(LoginUserDTO user) {
+        System.out.println(user.getUserName()+user.getPassword());
         //通过UsernamePasswordAuthenticationToken密码检验来authenticate
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUserName(),user.getPassword());
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
@@ -45,10 +46,10 @@ public class LoginServiceImpl implements LoginService {
         String userIDVO=null;
         //user的前缀不同，来封装userVO
         if (user.getUserName().contains("doctor-")){
-            jwt= JwtUtil.createJWT("doctor-"+userID);
+            jwt= JwtUtil.createJWTForWeb("doctor-"+userID);
             userIDVO="doctor-"+userID;
         } else if (user.getUserName().contains("user-")) {
-            jwt= JwtUtil.createJWT("user-"+userID);
+            jwt= JwtUtil.createJWTForApp("user-"+userID);
             userIDVO="user-"+userID;
         }
         //存入redis

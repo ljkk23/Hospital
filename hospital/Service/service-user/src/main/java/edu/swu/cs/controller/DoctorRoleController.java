@@ -22,12 +22,6 @@ import org.springframework.web.bind.annotation.*;
 public class DoctorRoleController {
     @Autowired
     private IDoctorRoleService doctorRoleService;
-    @PreAuthorize("hasAnyAuthority('system:user:add')")
-    @PostMapping("/addDoctorRole")
-    //TODO:实现事务增加doctor和新增doctor对应的角色
-    public ResponseResult addDoctor(@RequestBody AddDoctorRoleModel doctor){
 
-        return doctorRoleService.addDoctorRole(doctor);
-    }
 }
 

@@ -90,7 +90,7 @@ public class DeptCategoryServiceImpl extends ServiceImpl<DeptCategoryMapper, Dep
         return ResponseResult.okResult();
     }
     //新增dept就需要更改category
-    @CacheEvict(value = "category")
+    @CacheEvict(value = "category",key = "'getCategory'")
     @Override
     public ResponseResult addDept(DeptCategory deptCategory) {
         try {

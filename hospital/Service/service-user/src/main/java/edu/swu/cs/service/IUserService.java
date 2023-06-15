@@ -1,7 +1,9 @@
 package edu.swu.cs.service;
 
+import edu.swu.cs.domain.ResponseResult;
 import edu.swu.cs.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import edu.swu.cs.entity.model.AddUserModel;
 
 /**
  * <p>
@@ -13,4 +15,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IUserService extends IService<User> {
 
+    ResponseResult addUser(AddUserModel addUserModel);
+
+    ResponseResult updateUserInfo(User user);
 }

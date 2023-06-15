@@ -7,6 +7,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import edu.swu.cs.entity.VO.DoctorVO;
 import edu.swu.cs.entity.VO.QueryDoctorVO;
 import edu.swu.cs.entity.model.InquireDoctorModel;
+import edu.swu.cs.entity.model.ModifyPasswordModel;
+import edu.swu.cs.entity.model.UpdateDoctorInfoByUserModel;
+import edu.swu.cs.entity.model.UpdateDoctorInfoModel;
 
 import java.util.List;
 
@@ -22,6 +25,13 @@ public interface IDoctorService extends IService<Doctor> {
 
     QueryDoctorVO getPageDoctor(InquireDoctorModel doctorModel);
 
+    ResponseResult addDoctorAndRole(Doctor doctor);
 
+    ResponseResult modifyPassword(ModifyPasswordModel modifyPasswordModel);
 
+    ResponseResult updateDoctorInfoByRoot(UpdateDoctorInfoModel updateDoctorInfoModel);
+
+    ResponseResult updateDoctorInfoByUser(UpdateDoctorInfoByUserModel updateDoctorInfoModel);
+
+    ResponseResult deleteDoctor(Long doctorId);
 }
