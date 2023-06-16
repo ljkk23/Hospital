@@ -9,12 +9,11 @@ import edu.swu.cs.entity.Doctor;
 import edu.swu.cs.entity.DoctorRole;
 import edu.swu.cs.entity.VO.DoctorVO;
 import edu.swu.cs.entity.VO.QueryDoctorVO;
-import edu.swu.cs.entity.model.InquireDoctorModel;
-import edu.swu.cs.entity.model.ModifyPasswordModel;
-import edu.swu.cs.entity.model.UpdateDoctorInfoByUserModel;
-import edu.swu.cs.entity.model.UpdateDoctorInfoModel;
+import edu.swu.cs.entity.VO.SearchDoctorAndDeptVo;
+import edu.swu.cs.entity.model.*;
 import edu.swu.cs.enums.AppHttpCodeEnum;
 import edu.swu.cs.mapper.DoctorMapper;
+import edu.swu.cs.service.IDeptCategoryService;
 import edu.swu.cs.service.IDoctorRoleService;
 import edu.swu.cs.service.IDoctorService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -39,12 +38,15 @@ import java.util.Objects;
  * </p>
  *
  * @author liujian
- * @since 2022-11-10
+ *
  */
 @Service
 public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> implements IDoctorService {
     @Autowired
     private IDoctorRoleService doctorRoleService;
+    @Autowired
+    private IDeptCategoryService deptCategoryService;
+
     @Override
     public QueryDoctorVO getPageDoctor(InquireDoctorModel doctorModel) {
         Page<Doctor> page=new Page<>(doctorModel.getPageNum(), doctorModel.getPageSize());
@@ -158,6 +160,23 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
             log.error("remove doctor failed{}",e);
         }
         return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult searchDoctorAndDept(SearchDoctorAndDeptModel searchDoctorAndDeptModel) {
+        //查询doctor
+        LambdaQueryWrapper<Doctor> docQueryWrapper=new LambdaQueryWrapper<>();
+        docQueryWrapper.like(Doctor::getRealName,searchDoctorAndDeptModel.getData())
+                .or().like(Doctor::getIntroduce,searchDoctorAndDeptModel.getData());
+        List<Doctor> doctorList = this.getBaseMapper().selectList(docQueryWrapper);
+        List<DoctorVO> doctorVOS = BeanCopyUtils.copyBeanList(doctorList, DoctorVO.class);
+
+        //查询科室
+        List<String> deptNameList = deptCategoryService.searchDept(searchDoctorAndDeptModel.getData());
+
+        SearchDoctorAndDeptVo searchDoctorAndDeptVo=new SearchDoctorAndDeptVo(doctorVOS,deptNameList);
+
+        return ResponseResult.okResult(searchDoctorAndDeptVo);
     }
 
 

@@ -25,6 +25,9 @@ public class DoctorVO implements Serializable {
     @ApiModelProperty("用户名")
     private String userName;
 
+    @ApiModelProperty("用户名")
+    private String realName;
+
     @ApiModelProperty("邮箱")
     private String email;
 

@@ -42,6 +42,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             }
             userVO = BeanCopyUtils.copyBean(doctorByFeign, UserVO.class);
             permissions = menuService.getPermissions(userVO.getId());
+            //这里是写死的，后面要改为动态获取
+            if (realUserName.equals("zhangsan01")){
+                userVO.setRole("root");
+            }else {
+                userVO.setRole("normal");
+            }
         } else if (username.contains("user-")) {
             String[] userNameArray =  username.split("-");
             String realUserName=userNameArray[1];
@@ -50,6 +56,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 throw new RuntimeException("用户不存在");
             }
             userVO = BeanCopyUtils.copyBean(userByFeign, UserVO.class);
+
         }
 
         return new UserDetailsImpl(userVO,permissions);

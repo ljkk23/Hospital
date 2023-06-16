@@ -78,7 +78,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             return;
         }
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken;
-        if(!isVisitor) {
+        if(!isVisitor && userID.contains("doctor-")) {
             //将获取的UserDetailsImpl通过UsernamePasswordAuthenticationToken包装存入SecurityContext中
             usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         }else {

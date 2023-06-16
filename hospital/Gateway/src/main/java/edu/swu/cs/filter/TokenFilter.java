@@ -1,5 +1,6 @@
 package edu.swu.cs.filter;
 
+import com.alibaba.fastjson.JSON;
 import edu.swu.cs.utils.JwtUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +18,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String value = exchange.getRequest().getPath().value();
         System.out.println(value);
+        System.out.println(exchange.getRequest().getQueryParams().toString());
         // 判断是否符合白名单/api/security-auth/login
         if (value.equals("/api/security-auth/login")|| value.contains("/api/service-user/user/addUser")) {
             return chain.filter(exchange);
@@ -24,6 +26,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
         String token = exchange.getRequest().getHeaders().getFirst("token");
         String check=null;
         log.info(token+"    "+check);
+
         try {
             //解析token
             check= String.valueOf(JwtUtil.parseJWT(token).getSubject());

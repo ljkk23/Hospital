@@ -2,6 +2,7 @@ package edu.swu.cs.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.sun.xml.internal.ws.server.provider.ProviderInvokerTube;
+import edu.swu.cs.domain.ResponseResult;
 import edu.swu.cs.entity.Ware;
 import edu.swu.cs.mapper.WareMapper;
 import edu.swu.cs.service.IWareService;
@@ -32,5 +33,10 @@ public class WareServiceImpl extends ServiceImpl<WareMapper, Ware> implements IW
             return false;
         }
 
+    }
+
+    @Override
+    public ResponseResult getWareByDeptForDays(String deptName) {
+        return null;
     }
 }

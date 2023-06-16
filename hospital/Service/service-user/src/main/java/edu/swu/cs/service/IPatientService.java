@@ -1,7 +1,13 @@
 package edu.swu.cs.service;
 
+import edu.swu.cs.domain.ResponseResult;
 import edu.swu.cs.entity.Patient;
 import com.baomidou.mybatisplus.extension.service.IService;
+import edu.swu.cs.entity.model.GetPatientInfoModel;
+import edu.swu.cs.entity.model.ModifyPatientInfoModel;
+
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * <p>
@@ -13,4 +19,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IPatientService extends IService<Patient> {
 
+    ResponseResult addPatient(Patient patient);
+
+    ResponseResult modifyPatient(ModifyPatientInfoModel modifyPatientInfoModel);
+
+    ResponseResult getPatient(GetPatientInfoModel getPatientInfoModel);
 }

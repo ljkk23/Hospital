@@ -1,5 +1,6 @@
 package edu.swu.cs.service;
 
+import edu.swu.cs.domain.ResponseResult;
 import edu.swu.cs.entity.Ware;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -14,4 +15,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface IWareService extends IService<Ware> {
 
     Boolean lockWare(Long productID);
+
+    ResponseResult getWareByDeptForDays(String deptName);
 }

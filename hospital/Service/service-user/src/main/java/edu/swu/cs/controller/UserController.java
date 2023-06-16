@@ -2,6 +2,7 @@ package edu.swu.cs.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import edu.swu.cs.annotation.systemLog;
 import edu.swu.cs.domain.ResponseResult;
 import edu.swu.cs.entity.Doctor;
 import edu.swu.cs.entity.Patient;
@@ -40,6 +41,7 @@ public class UserController {
         return userService.addUser(addUserModel);
     }
 
+    @systemLog(businessName = "更改用户信息")
     @PostMapping("/updateUserInfo")
     public ResponseResult updateUserInfo(@RequestBody User user){
 

@@ -27,4 +27,6 @@ public interface IDeptCategoryService extends IService<DeptCategory> {
     ResponseResult deleteCategory(Long id);
 
     ResponseResult addDept(DeptCategory deptCategory);
+
+    List<String> searchDept(String deptName);
 }

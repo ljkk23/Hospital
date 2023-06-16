@@ -56,6 +56,12 @@ public class ProductController {
     }
 
 
+    @GetMapping("/getWareByDeptForDays")
+    public ResponseResult getWareByDeptForDays(String deptName,Integer dateIndex){
+          return null;
+    }
+
+
 
 
 

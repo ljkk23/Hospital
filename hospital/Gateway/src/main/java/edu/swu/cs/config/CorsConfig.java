@@ -1,5 +1,6 @@
 package edu.swu.cs.config;
 
+import edu.swu.cs.filter.HttpRequestFilter;
 import edu.swu.cs.filter.TokenFilter;
 import org.springframework.cloud.gateway.filter.factory.RewritePathGatewayFilterFactory;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -54,4 +55,5 @@ public class CorsConfig {
     public TokenFilter tokenFilter(){
         return new TokenFilter();
     }
+
 }

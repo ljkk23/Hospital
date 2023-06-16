@@ -72,7 +72,7 @@ public class User implements Serializable {
     private LocalDateTime createTime;
 
     @ApiModelProperty("更新人")
-    private Long updateBy;
+    private String updateBy;
 
     @ApiModelProperty("更新时间")
     @TableField(fill = FieldFill.INSERT_UPDATE)

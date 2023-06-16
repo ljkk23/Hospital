@@ -23,7 +23,7 @@ public enum AppHttpCodeEnum {
     IDEMPOTENT_ERROR(514,"订单已经提交过了"),
     WARE_ERROR(515,"库存已没有"),
 
-    WRONG_OPERATOR(516,"只能操作自己用户的信息"),
+    WRONG_OPERATOR(516,"只能操作自己用户的信息,用户名输入错误"),
 
     NO_USER(517,"没有该用户，更新失败");
 

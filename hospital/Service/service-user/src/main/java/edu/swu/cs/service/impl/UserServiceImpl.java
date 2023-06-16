@@ -73,8 +73,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
         LambdaUpdateWrapper<User> lambdaUpdateWrapper=new LambdaUpdateWrapper<>();
         lambdaUpdateWrapper.eq(User::getUserName,user.getUserName())
-                .eq(User::getPhonenumber,user.getPhonenumber())
-                .set(user.getUserName()!=null&&!user.getUserName().isEmpty(),User::getUserName,user.getUserName())
+                .set(user.getPassword()!=null && !user.getPassword().trim().isEmpty(),User::getPassword,MD5Util.encode(user.getPassword()))
                 .set(user.getPhonenumber()!=null && !user.getPhonenumber().trim().isEmpty(),User::getPhonenumber,user.getPhonenumber())
                 .set(user.getCardId()!=null && !user.getCardId().trim().isEmpty(),User::getCardId,user.getCardId())
                 .set(user.getSex()!=null && user.getSex().trim().isEmpty(),User::getSex,user.getSex());

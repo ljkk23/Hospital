@@ -27,4 +27,6 @@ public class UserVO {
      */
     private String avatar;
 
+    private String role;
+
 }

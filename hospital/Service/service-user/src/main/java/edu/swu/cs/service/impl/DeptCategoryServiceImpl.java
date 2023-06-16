@@ -1,6 +1,7 @@
 package edu.swu.cs.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.swu.cs.Exception.SystemException;
 import edu.swu.cs.domain.ResponseResult;
 import edu.swu.cs.entity.DeptCategory;
@@ -99,6 +100,15 @@ public class DeptCategoryServiceImpl extends ServiceImpl<DeptCategoryMapper, Dep
             throw new SystemException(AppHttpCodeEnum.DATABASE_ERROR);
         }
         return ResponseResult.okResult();
+    }
+
+    @Override
+    public List<String> searchDept(String deptName) {
+        LambdaQueryWrapper<DeptCategory> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.like(DeptCategory::getDeptName,deptName);
+        List<DeptCategory> deptCategories = this.getBaseMapper().selectList(lambdaQueryWrapper);
+        List<String> deptNameList = deptCategories.stream().map(x -> x.getDeptName()).collect(Collectors.toList());
+        return deptNameList;
     }
 
 

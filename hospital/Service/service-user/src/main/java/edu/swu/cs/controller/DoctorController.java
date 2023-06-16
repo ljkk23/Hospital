@@ -3,16 +3,14 @@ package edu.swu.cs.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.sun.xml.internal.bind.v2.TODO;
+import edu.swu.cs.annotation.systemLog;
 import edu.swu.cs.domain.ResponseResult;
 import edu.swu.cs.domain.securityEntity.Role;
 import edu.swu.cs.entity.Doctor;
 import edu.swu.cs.entity.DoctorRole;
 import edu.swu.cs.entity.VO.DoctorVO;
 import edu.swu.cs.entity.VO.QueryDoctorVO;
-import edu.swu.cs.entity.model.InquireDoctorModel;
-import edu.swu.cs.entity.model.ModifyPasswordModel;
-import edu.swu.cs.entity.model.UpdateDoctorInfoByUserModel;
-import edu.swu.cs.entity.model.UpdateDoctorInfoModel;
+import edu.swu.cs.entity.model.*;
 import edu.swu.cs.enums.AppHttpCodeEnum;
 import edu.swu.cs.securityService.IRoleService;
 import edu.swu.cs.service.IDoctorRoleService;
@@ -108,11 +106,19 @@ public class DoctorController {
      * @param
      * @return
      */
+    @systemLog(businessName = "分页获取医生的个人信息")
     @PostMapping("/getDoctorPageInfo")
     public ResponseResult getDoctor(@RequestBody InquireDoctorModel doctorModel){
         QueryDoctorVO pageDoctor = doctorService.getPageDoctor(doctorModel);
         return ResponseResult.okResult(pageDoctor);
     }
+
+    @PostMapping("/searchDoctorOrDept")
+    public ResponseResult searchDoctorOrDept(@RequestBody SearchDoctorAndDeptModel searchDoctorAndDeptModel){
+
+        return doctorService.searchDoctorAndDept(searchDoctorAndDeptModel);
+    }
+
 
 
 

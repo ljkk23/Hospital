@@ -1,7 +1,13 @@
 package edu.swu.cs.aspect;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import edu.swu.cs.Exception.SystemException;
 import edu.swu.cs.annotation.systemLog;
+import edu.swu.cs.domain.ResponseResult;
+import edu.swu.cs.domain.securityEntity.UserDetailsImpl;
+import edu.swu.cs.enums.AppHttpCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -9,12 +15,15 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 @Component
 @Aspect
@@ -62,8 +71,23 @@ public class logAspect {
         log.info("Class Method   : {}.{}", joinPoint.getSignature().getDeclaringTypeName(),((MethodSignature)joinPoint.getSignature()).getName());
         // 打印请求的 IP
         log.info("IP             : {}",request.getRequestURL());
+        String jsonString = JSON.toJSONString(joinPoint.getArgs());
         // 打印请求入参
-        log.info("Request Args   : {}", JSON.toJSONString(joinPoint.getArgs()));
+        log.info("Request Args   : {}", jsonString);
+
+        JSONArray objects = JSONObject.parseArray(jsonString);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl)authentication.getPrincipal();
+        //如果传过来的参数有userName
+        if(!Objects.isNull(objects)){
+            JSONObject jsonObject = objects.getJSONObject(0);
+            if(!Objects.isNull(jsonObject.get("userName"))){
+                if(!Objects.equals(userDetails.getUsername(),jsonObject.get("userName"))){
+                    throw new SystemException(AppHttpCodeEnum.WRONG_OPERATOR);
+                }
+            }
+        }
 
     }
 }
