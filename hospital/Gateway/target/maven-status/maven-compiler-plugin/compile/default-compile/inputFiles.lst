@@ -1,6 +1,0 @@
-/home/lj/code/hospital/Gateway/src/main/java/edu/swu/cs/filter/TokenFilter.java
-/home/lj/code/hospital/Gateway/src/main/java/edu/swu/cs/gateWayApplication.java
-/home/lj/code/hospital/Gateway/src/main/java/edu/swu/cs/config/CorsConfig.java
-/home/lj/code/hospital/Gateway/src/main/java/edu/swu/cs/filter/HttpRequestFilter.java
-/home/lj/code/hospital/Gateway/src/main/java/edu/swu/cs/utils/JwtUtil.java
-/home/lj/code/hospital/Gateway/src/main/java/edu/swu/cs/filter/WrapperResponseGlobalFilter.java
