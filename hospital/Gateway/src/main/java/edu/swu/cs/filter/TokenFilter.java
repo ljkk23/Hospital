@@ -20,7 +20,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
         System.out.println(value);
         System.out.println(exchange.getRequest().getQueryParams().toString());
         // 判断是否符合白名单/api/security-auth/login
-        if (value.equals("/api/security-auth/login")|| value.contains("/api/service-user/user/addUser")) {
+        if (value.equals("/api/security-auth/login")|| value.contains("/api/service-user/user/addUser") || value.contains("getImage")) {
             return chain.filter(exchange);
         }
         String token = exchange.getRequest().getHeaders().getFirst("token");

@@ -49,6 +49,8 @@ public class DeptCategory implements Serializable {
 
       @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
+      //1表示门诊分类
+      private Integer type;
 
 
 }

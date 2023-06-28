@@ -66,7 +66,7 @@ public class Doctor implements Serializable {
     private String sex;
 
     @ApiModelProperty("头像地址")
-    private String avatar;
+    private String avatar=null;
 
     @ApiModelProperty("创建时间")
       @TableField(fill = FieldFill.INSERT)
@@ -85,5 +85,7 @@ public class Doctor implements Serializable {
 
     @ApiModelProperty("医生的简介")
     private String introduce;
+    @ApiModelProperty("删除标志（0代表未删除，1代表已删除）")
+    private Integer delFlag;
 
 }

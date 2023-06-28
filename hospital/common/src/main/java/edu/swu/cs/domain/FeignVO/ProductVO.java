@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,13 +25,17 @@ public class ProductVO implements Serializable {
     private Long id;
 
     @ApiModelProperty("安排时间")
-    private String date;
+    private Long date;
+
+    private Integer offsetTime;
 
     @ApiModelProperty("创建时间")
     private LocalDateTime createTime;
 
     @ApiModelProperty("医生编号")
     private Long doctorId;
+
+
 
 
 }

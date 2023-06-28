@@ -1,12 +1,12 @@
 package edu.swu.cs.service;
 
-import edu.swu.cs.controller.DoctorController;
 import edu.swu.cs.domain.ResponseResult;
 import edu.swu.cs.entity.Doctor;
 import com.baomidou.mybatisplus.extension.service.IService;
-import edu.swu.cs.entity.VO.DoctorVO;
+import edu.swu.cs.domain.FeignVO.GetWareDoctorFeignVO;
 import edu.swu.cs.entity.VO.QueryDoctorVO;
 import edu.swu.cs.entity.model.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,4 +33,10 @@ public interface IDoctorService extends IService<Doctor> {
     ResponseResult deleteDoctor(Long doctorId);
 
     ResponseResult searchDoctorAndDept(SearchDoctorAndDeptModel searchDoctorAndDeptModel);
+
+    List<GetWareDoctorFeignVO> getDoctorByDeptByFeign(String deptName);
+
+    ResponseResult checkRole(CheckRoleModel checkRoleModel);
+
+    String uploadFile(MultipartFile file);
 }

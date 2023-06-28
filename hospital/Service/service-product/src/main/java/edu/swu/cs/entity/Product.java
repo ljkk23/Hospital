@@ -33,8 +33,12 @@ public class Product implements Serializable {
     @ApiModelProperty("医生编号")
     private Long doctorId;
 
+    private Long parentId;
+
     @ApiModelProperty("安排时间")
-    private String date;
+    private Long date;
+
+    private Integer offsetTime;
 
 
     @ApiModelProperty("类型")
@@ -44,8 +48,6 @@ public class Product implements Serializable {
       @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-    @ApiModelProperty("更新人")
-    private Long updateBy;
 
     @ApiModelProperty("更新时间")
       @TableField(fill = FieldFill.INSERT_UPDATE)
@@ -57,9 +59,9 @@ public class Product implements Serializable {
     @ApiModelProperty("是否已经上架")
     private String status;
 
+    private String uuid;
 
-    public Product(Long doctorId, String date) {
-        this.doctorId = doctorId;
-        this.date = date;
-    }
+    private String typeParent;
+
+
 }

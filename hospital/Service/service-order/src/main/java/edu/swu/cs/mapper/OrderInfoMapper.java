@@ -3,6 +3,7 @@ package edu.swu.cs.mapper;
 import edu.swu.cs.entity.OrderInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>

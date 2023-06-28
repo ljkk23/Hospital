@@ -13,7 +13,7 @@ public enum AppHttpCodeEnum {
     EMAIL_EXIST(503, "邮箱已存在"),
     REQUIRE_USERNAME(504, "必需填写用户名"),
     LOGIN_ERROR(505,"用户名或密码错误505"),
-    FILE_TYPE_ERROR(507, "文件类型错误，请上传png文件"),
+    FILE_TYPE_ERROR(507, "文件类型错误"),
     USERNAME_NOT_NULL(508, "用户名不能为空"),
     NICKNAME_NOT_NULL(509, "昵称不能为空"),
     PASSWORD_NOT_NULL(510, "密码不能为空"),
@@ -26,6 +26,7 @@ public enum AppHttpCodeEnum {
     WRONG_OPERATOR(516,"只能操作自己用户的信息,用户名输入错误"),
 
     NO_USER(517,"没有该用户，更新失败");
+
 
 
     int code;

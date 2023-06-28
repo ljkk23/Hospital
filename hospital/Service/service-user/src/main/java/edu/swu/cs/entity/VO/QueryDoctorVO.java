@@ -15,6 +15,6 @@ public class QueryDoctorVO implements Serializable {
 
     private Long pageSize;
     private Long pageNum;
-    private Long pageTotal;
+    private double pageTotal;
     private List<DoctorVO> doctorVOList;
 }

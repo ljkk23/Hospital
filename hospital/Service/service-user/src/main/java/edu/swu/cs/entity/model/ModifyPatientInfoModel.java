@@ -31,7 +31,4 @@ public class ModifyPatientInfoModel {
     @ApiModelProperty("过往病史")
     private String medicalHistory;
 
-
-
-    private String  uuid;
 }

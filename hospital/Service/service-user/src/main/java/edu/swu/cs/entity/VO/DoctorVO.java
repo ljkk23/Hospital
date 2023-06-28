@@ -19,13 +19,15 @@ public class DoctorVO implements Serializable {
     @ApiModelProperty("部门id")
     private Long deptId;
 
+    private String deptName;
+
     @ApiModelProperty("医生职称")
     private String title;
 
     @ApiModelProperty("用户名")
     private String userName;
 
-    @ApiModelProperty("用户名")
+    @ApiModelProperty("真实姓名")
     private String realName;
 
     @ApiModelProperty("邮箱")
@@ -38,7 +40,7 @@ public class DoctorVO implements Serializable {
     private String sex;
 
     @ApiModelProperty("头像地址")
-    private String avatar;
+    private String avatar=null;
 
     @ApiModelProperty("如果是医生就是挂号费")
     private Integer amount;

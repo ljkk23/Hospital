@@ -1,7 +1,13 @@
 import edu.swu.cs.utils.JwtUtil;
 import edu.swu.cs.utils.MD5Util;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.SimpleEmail;
+import org.springframework.test.context.junit4.SpringRunner;
+
 
 public class createJWT {
 
@@ -27,7 +33,10 @@ public class createJWT {
 
     @Test
     public void test3(){
-        String encode = MD5Util.encode("0d5caa5ef3e814868a8f762a206c7233");
+        String encode = MD5Util.encode("zhangsan");
         System.out.println(encode);
     }
+
+
+
 }

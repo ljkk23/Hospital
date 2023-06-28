@@ -47,7 +47,7 @@ public class UserFeignVO implements Serializable {
     private String sex;
 
     @ApiModelProperty("头像地址")
-    private String avatar;
+    private String avatar=null;
 
     @ApiModelProperty("创建时间")
     @TableField(fill = FieldFill.INSERT)

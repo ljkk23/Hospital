@@ -45,6 +45,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 || httpServletRequest.getRequestURI().contains("/v2/api-docs")
                 || httpServletRequest.getRequestURI().contains("webjars")
                 || httpServletRequest.getRequestURI().contains("/service-user/user/addUser")
+                || httpServletRequest.getRequestURI().contains("Feign")
+                || httpServletRequest.getRequestURI().contains("getImage")
         ){
             filterChain.doFilter(httpServletRequest,httpServletResponse);
             return;

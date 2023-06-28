@@ -12,7 +12,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Configuration
@@ -53,7 +55,7 @@ public class myRabbitConfig {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("x-dead-letter-exchange", SystemConstants.ORDER_EXCHANGE);
         arguments.put("x-dead-letter-routing-key", "order.release");
-        arguments.put("x-message-ttl", 60000);
+        arguments.put("x-message-ttl", 3*60000);
         return new Queue(SystemConstants.ORDER_DELAY_QUEUE, true, false, false, arguments);
     }
 

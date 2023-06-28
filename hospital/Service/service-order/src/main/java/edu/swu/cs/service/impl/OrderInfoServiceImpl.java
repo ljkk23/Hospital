@@ -1,6 +1,8 @@
 package edu.swu.cs.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.swu.cs.Constants.SystemConstants;
 import edu.swu.cs.client.ProductClient;
 import edu.swu.cs.client.UserClient;
@@ -9,12 +11,14 @@ import edu.swu.cs.domain.FeignVO.DoctorFeignVO;
 import edu.swu.cs.domain.FeignVO.PatientVo;
 import edu.swu.cs.domain.FeignVO.ProductVO;
 import edu.swu.cs.domain.ResponseResult;
+import edu.swu.cs.entity.GetOrderListByDoctorIdModel;
 import edu.swu.cs.entity.OrderInfo;
-import edu.swu.cs.entity.VO.OrderVO;
+import edu.swu.cs.entity.VO.*;
 import edu.swu.cs.enums.AppHttpCodeEnum;
 import edu.swu.cs.mapper.OrderInfoMapper;
 import edu.swu.cs.service.IOrderInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.swu.cs.utils.BeanCopyUtils;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +26,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -32,7 +39,6 @@ import java.util.concurrent.*;
  * </p>
  *
  * @author liujian
- * @since 2022-11-10
  */
 @Service
 public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo> implements IOrderInfoService {
@@ -56,7 +62,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private RedisTemplate redisTemplate;
 
     @Override
-    public ResponseResult getOrderByID(Long orderId) {
+    public OrderVO getOrderByID(String orderId) {
         long startTime=System.currentTimeMillis(); //获取开始时间
         ThreadPoolExecutor executor = new ThreadPoolExecutor(
                 CORE_POOL_SIZE,
@@ -71,18 +77,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
 
         //通过openfeign远程调用product中的通过id获取product的信息，以及patientID获取patient的信息，组装成订单信息返回给前端
-        OrderInfo orderInfo = this.baseMapper.selectById(orderId);
 
-        orderVO.setOrderId(orderInfo.getProductId())
+        LambdaQueryWrapper<OrderInfo> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(OrderInfo::getOrderId,orderId);
+        OrderInfo orderInfo = this.getOne(lambdaQueryWrapper);
+
+
+        orderVO.setOrderId(orderInfo.getOrderId())
                 .setCreateTime(orderInfo.getCreateTime())
-                .setOrderStatus(orderInfo.getOrderStatus());
+                .setOrderStatus(orderInfo.getOrderStatus())
+                .setOpinions(orderInfo.getOpinions());
 //        ProductVO productVO = productClient.FeignGetProductInfo(orderInfo.getProductId());
 //        orderVO.setDate(productVO.getDate());
 
         CompletableFuture<ProductVO> productFuture = CompletableFuture.supplyAsync(() -> {
             //1.获取product的信息
             ProductVO productVO = productClient.FeignGetProductInfo(orderInfo.getProductId());
-            orderVO.setDate(productVO.getDate());
+
+            orderVO.setDate(productVO.getDate())
+                    .setOffsetTime(productVO.getOffsetTime());
             return productVO;
 
         }, executor);
@@ -96,7 +109,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     .setDoctorPhonenumber(doctorFeignVO.getPhonenumber())
                     .setDoctorSex(doctorFeignVO.getSex())
                     .setTitle(doctorFeignVO.getTitle())
-                    .setDoctorUserName(doctorFeignVO.getUserName())
+                    .setDoctorRealName(doctorFeignVO.getRealName())
+                    .setDeptName(doctorFeignVO.getDeptName())
                     .setAmount(doctorFeignVO.getAmount());
         }, executor);
 
@@ -117,7 +131,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     .setPatientCardId(patientVo.getCardId())
                     .setPatientSex(patientVo.getSex())
                     .setPatientPhonenumber(patientVo.getPhonenumber())
-                    .setPatientUserName(patientVo.getUserName());
+                    .setPatientUserName(patientVo.getUserName())
+                    .setMedicalHistory(patientVo.getMedicalHistory());
 
         }, executor);
 
@@ -131,9 +146,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //等待所有任务都完成
         try {
             CompletableFuture.allOf(doctorFuture,patientFuture,productFuture).get();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
 
@@ -141,8 +154,72 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         System.out.println("程序运行时间： "+(endTime-startTime)+"ms");
 
-        return ResponseResult.okResult(orderVO);
+        return orderVO;
     }
+
+    @Override
+    public ResponseResult cancelOrderByOrderId(String orderId) {
+        LambdaUpdateWrapper<OrderInfo> lambdaUpdateWrapper=new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(OrderInfo::getOrderId,orderId)
+                .set(OrderInfo::getOrderStatus,3);
+        if(!this.update(lambdaUpdateWrapper)){
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATABASE_ERROR);
+        }
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public List<GetOrderListByUserVO> getOrderListByUserId(Long userId) {
+        //查询该userId的所有order的id
+        LambdaQueryWrapper<OrderInfo> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(OrderInfo::getUserId,userId);
+        List<OrderInfo> orderInfos = this.list(lambdaQueryWrapper);
+
+        List<OrderVO> orderVOS = orderInfos.stream().map(x -> {
+            return getOrderByID(x.getOrderId());
+        }).collect(Collectors.toList());
+
+        List<GetOrderListByUserVO> getOrderListByUserVOS = BeanCopyUtils.copyBeanList(orderVOS, GetOrderListByUserVO.class);
+
+        return getOrderListByUserVOS;
+    }
+
+
+    @Override
+    public GetOrderListPageByDoctorVO getOrderListByDoctorId(GetOrderListByDoctorIdModel getOrderListByDoctorIdModel) {
+        //查询该userId的所有order的id
+
+        List<Long> productIdList = productClient.getProductIdByDoctorAndDate(getOrderListByDoctorIdModel.getUserName(), getOrderListByDoctorIdModel.getDate());
+
+        Page<OrderInfo> page=new Page<>(getOrderListByDoctorIdModel.getPageNum(), getOrderListByDoctorIdModel.getPageSize());
+        LambdaQueryWrapper<OrderInfo> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.in(OrderInfo::getProductId,productIdList)
+                .eq(OrderInfo::getOrderStatus,1);
+
+        Page<OrderInfo> orderInfoPage = this.baseMapper.selectPage(page, lambdaQueryWrapper);
+
+        List<OrderInfo> orderInfos = orderInfoPage.getRecords();
+        List<OrderVO> orderVOS = orderInfos.stream().map(x -> {
+            return getOrderByID(x.getOrderId());
+        }).collect(Collectors.toList());
+
+        List<OrderVO> orderSortedVOS = orderVOS.stream().sorted(Comparator.comparing(OrderVO::getOffsetTime)).collect(Collectors.toList());
+
+        List<GetOrderListByDoctorVO> getOrderListByDoctorVOS = BeanCopyUtils.copyBeanList(orderSortedVOS, GetOrderListByDoctorVO.class);
+
+        GetOrderListPageByDoctorVO getOrderListPageByDoctorVO=new GetOrderListPageByDoctorVO(orderInfoPage.getSize(),orderInfoPage.getCurrent()
+                ,Math.ceil((double) orderInfoPage.getTotal()/orderInfoPage.getSize()),getOrderListByDoctorVOS);
+
+        return getOrderListPageByDoctorVO;
+    }
+
+    @Override
+    public List<GetOrderListByUserVO> getOrderListByUserIdAndStatus(Long userId, Integer status) {
+        List<GetOrderListByUserVO> orderListByUserId = this.getOrderListByUserId(userId);
+        return orderListByUserId.stream().filter(x -> x.getOrderStatus() == status).collect(Collectors.toList());
+
+    }
+
     @Transactional
     @Override
     public ResponseResult addOrder(Long userID, Long patientID, Long productID,String type) {
@@ -169,6 +246,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //模仿库存锁定之后，本地事务的回滚
 //        int a=10/0;
 
+        return ResponseResult.okResult(new AddOrderVO(orderInfo.getOrderId()));
+    }
+
+    @Override
+    public ResponseResult payOrder(String orderId) {
+        //判断订单是否可支付
+        LambdaQueryWrapper<OrderInfo> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(OrderInfo::getOrderId,orderId);
+        OrderInfo oneOrder = this.getOne(lambdaQueryWrapper);
+        if (oneOrder.getOrderStatus()!=0){
+            return ResponseResult.errorResult(500,"订单已经取消");
+        }
+
+        LambdaUpdateWrapper<OrderInfo> lambdaUpdateWrapper=new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(OrderInfo::getOrderId,orderId)
+                .set(OrderInfo::getOrderStatus,1);
+        if (!this.update(lambdaUpdateWrapper)){
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATABASE_ERROR);
+        }
         return ResponseResult.okResult();
     }
 }

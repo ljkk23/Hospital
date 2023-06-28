@@ -25,3 +25,4 @@ public class UpdateDoctorInfoModel {
     @ApiModelProperty("如果是医生就是挂号费")
     private Integer amount;
 }
+

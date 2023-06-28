@@ -31,8 +31,6 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RabbitListener(queues = SystemConstants.HOTORDER_QUEUE)
 public class HotOrderListener {
-    @Autowired
-    private IOrderInfoService orderInfoService;
 
     @Autowired
     private OrderInfoMapper orderInfoMapper;

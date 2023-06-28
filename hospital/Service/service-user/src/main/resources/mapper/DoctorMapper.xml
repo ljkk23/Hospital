@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="edu.swu.cs.mapper.DoctorMapper">
+    <select id="selectByDoctorIdHTML" resultType="java.lang.String">
+        select m.html
+        from html_role m
+                left join sys_doctor_role sdr on sdr.role_id=m.roleId
+                left join sys_doctor sd on sd.id=sdr.user_id
+        where
+            sd.user_name=#{userName} and
+            sd.`del_flag` = 0
+    </select>
 
 </mapper>

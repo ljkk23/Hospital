@@ -6,9 +6,9 @@ spring:
   application:
     name: service-hotOrder
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/hospital?characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://42.194.203.220:3306/hospital?characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
-    password: "root"
+    password: "@liuJ0523"
     driver-class-name: com.mysql.cj.jdbc.Driver
   servlet:
     multipart:
@@ -17,7 +17,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848
+        server-addr: 42.194.203.220:8848
   rabbitmq:
     addresses: 127.0.0.1:5672
     username: guest

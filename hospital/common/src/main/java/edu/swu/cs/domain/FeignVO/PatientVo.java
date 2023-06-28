@@ -34,6 +34,8 @@ public class PatientVo implements Serializable {
 
     @ApiModelProperty("年龄")
     private Integer age;
+    @ApiModelProperty("过往病史")
+    private String medicalHistory;
 
 
 

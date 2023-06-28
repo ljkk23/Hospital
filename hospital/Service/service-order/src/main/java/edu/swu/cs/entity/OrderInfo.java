@@ -77,4 +77,6 @@ public class OrderInfo implements Serializable {
     @ApiModelProperty("类型")
     private String type;
 
+    private String opinions;
+
 }

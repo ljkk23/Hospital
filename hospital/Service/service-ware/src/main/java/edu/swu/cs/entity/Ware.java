@@ -35,5 +35,9 @@ public class Ware implements Serializable {
     @ApiModelProperty("已经锁定的数量")
     private Integer lockAmount;
 
+    private Long parentProductId;
+
+    private Integer offsetTime;
+
 
 }

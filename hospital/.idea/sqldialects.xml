@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
+    <file url="file://$USER_HOME$/tmp/_localhost-2023_06_26_22_30_17-dump.sql" dialect="MySQL" />
     <file url="file://$USER_HOME$/tmp/hosipital.sql" dialect="MySQL" />
   </component>
 </project>

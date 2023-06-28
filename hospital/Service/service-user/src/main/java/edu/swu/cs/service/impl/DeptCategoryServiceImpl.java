@@ -5,11 +5,15 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import edu.swu.cs.Exception.SystemException;
 import edu.swu.cs.domain.ResponseResult;
 import edu.swu.cs.entity.DeptCategory;
+import edu.swu.cs.entity.Doctor;
+import edu.swu.cs.entity.VO.DeptCatagoryRootListVO;
 import edu.swu.cs.entity.VO.DeptCategoryVO;
+import edu.swu.cs.entity.VO.GetDeptDoctorVO;
 import edu.swu.cs.enums.AppHttpCodeEnum;
 import edu.swu.cs.mapper.DeptCategoryMapper;
 import edu.swu.cs.service.IDeptCategoryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.swu.cs.service.IDoctorService;
 import edu.swu.cs.utils.BeanCopyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -38,6 +42,10 @@ public class DeptCategoryServiceImpl extends ServiceImpl<DeptCategoryMapper, Dep
     @Autowired
     public RedisTemplate redisTemplate;
 
+    @Autowired
+    private IDoctorService doctorService;
+
+
     @Cacheable(value = {"category"}, key = "#root.method.name")
     @Override
     public List<DeptCategoryVO> getCategory() {
@@ -51,6 +59,16 @@ public class DeptCategoryServiceImpl extends ServiceImpl<DeptCategoryMapper, Dep
             return catalogJsonFromDB;
 //        }
 //        return ResponseResult.okResult(categoryJson);
+    }
+
+    @Cacheable(value = {"category"}, key = "#root.method.name")
+    @Override
+    public List<DeptCatagoryRootListVO> getCategoryByRoot() {
+        LambdaQueryWrapper<DeptCategory> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(DeptCategory::getType,1);
+        List<DeptCategory> deptCategories = this.baseMapper.selectList(lambdaQueryWrapper);
+        List<DeptCatagoryRootListVO> deptCatagoryRootListVOS = BeanCopyUtils.copyBeanList(deptCategories, DeptCatagoryRootListVO.class);
+        return deptCatagoryRootListVOS;
     }
 
     @Override
@@ -105,10 +123,28 @@ public class DeptCategoryServiceImpl extends ServiceImpl<DeptCategoryMapper, Dep
     @Override
     public List<String> searchDept(String deptName) {
         LambdaQueryWrapper<DeptCategory> lambdaQueryWrapper=new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.like(DeptCategory::getDeptName,deptName);
+        lambdaQueryWrapper.like(DeptCategory::getDeptName,deptName)
+                .eq(DeptCategory::getType,1);
         List<DeptCategory> deptCategories = this.getBaseMapper().selectList(lambdaQueryWrapper);
         List<String> deptNameList = deptCategories.stream().map(x -> x.getDeptName()).collect(Collectors.toList());
         return deptNameList;
+    }
+
+    @Override
+    public List<GetDeptDoctorVO> getDeptDoctorsByDoctorName(String userName) {
+        LambdaQueryWrapper<Doctor> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Doctor::getUserName,userName);
+        Doctor doctor = doctorService.getOne(lambdaQueryWrapper);
+
+
+
+        LambdaQueryWrapper<Doctor> doctorLambdaQueryWrapper=new LambdaQueryWrapper<>();
+        doctorLambdaQueryWrapper.eq(Doctor::getDeptId,doctor.getDeptId());
+        List<Doctor> doctorList = doctorService.list(doctorLambdaQueryWrapper);
+        List<GetDeptDoctorVO> doctorUserList = doctorList.stream().map(x->{
+            return new GetDeptDoctorVO(x.getUserName(),x.getRealName());
+        }).collect(Collectors.toList());
+        return doctorUserList;
     }
 
 

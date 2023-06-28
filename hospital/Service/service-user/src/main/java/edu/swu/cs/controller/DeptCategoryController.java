@@ -33,6 +33,11 @@ public class DeptCategoryController {
         return ResponseResult.okResult(deptCategoryService.getCategory());
     }
 
+    @GetMapping("getCategoryByRoot")
+    public ResponseResult getCategoryByRoot(){
+        return ResponseResult.okResult(deptCategoryService.getCategoryByRoot());
+    }
+
     @GetMapping("deleteCategory")
     public ResponseResult deleteCategory(Long id){
         return deptCategoryService.deleteCategory(id);
@@ -44,5 +49,9 @@ public class DeptCategoryController {
         return deptCategoryService.addDept(deptCategory);
     }
 
+    @GetMapping("/getDeptDoctorsByDoctorName")
+    public ResponseResult getDeptDoctorsByDoctorName(String userName){
+        return ResponseResult.okResult(deptCategoryService.getDeptDoctorsByDoctorName(userName));
+    }
 }
 
