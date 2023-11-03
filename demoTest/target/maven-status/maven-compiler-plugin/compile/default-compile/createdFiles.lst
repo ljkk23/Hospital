@@ -1,0 +1,7 @@
+org/example/service/IUserInfoService.class
+org/example/controller/UserInfoController.class
+org/example/service/impl/UserInfoServiceImpl.class
+org/example/utils/FastAutoGeneratorTest.class
+org/example/mapper/UserInfoMapper.class
+org/example/DemoApplication.class
+org/example/entity/UserInfo.class
