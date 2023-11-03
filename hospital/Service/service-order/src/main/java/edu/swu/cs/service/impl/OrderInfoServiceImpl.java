@@ -223,6 +223,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Transactional
     @Override
     public ResponseResult addOrder(Long userID, Long patientID, Long productID,String type) {
+
         //60秒内提交的订单视为幂等
         String redisKey= "AddOrder:"+userID+":"+ patientID + ":"+productID;
         Object orderRedis = redisTemplate.opsForValue().get(redisKey);
@@ -240,6 +241,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         rabbitTemplate.convertAndSend(SystemConstants.ORDER_EXCHANGE,"order.locked",orderInfo,new CorrelationData(UUID.randomUUID().toString()));
          //锁库存
         Boolean lockResult = wareClient.lockWare(productID);
+        System.out.println(lockResult);
+        System.out.println("dddddddd");
         if (!lockResult){
             throw new RuntimeException("库存不够");
         }

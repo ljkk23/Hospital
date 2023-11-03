@@ -45,37 +45,41 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     @Override
     public ResponseResult getWareByDeptForDays(String deptName, long dateSecond) {
+        List<GetWareProDuctListVO> doctors=new ArrayList<>();
+        try {
+            List<GetWareDoctorFeignVO> doctorListByFeign = doctorClient.getDoctorByDeptByFeign(deptName);
+            System.out.println(doctorListByFeign);
+            long beforeSecond=dateSecond-86400;
+            //将医生的id提取出来方便查询
+            List<Long> doctorIDs = doctorListByFeign.stream().map(GetWareDoctorFeignVO::getId).collect(Collectors.toList());
+            Map<Long, GetWareDoctorFeignVO> doctorMap = doctorListByFeign.stream().collect(Collectors.toMap(GetWareDoctorFeignVO::getId, Function.identity()));
+
+            //根据医生的id的list查询商品
+            LambdaQueryWrapper<Product> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.between(Product::getDate,beforeSecond,dateSecond)
+                    .in(Product::getDoctorId,doctorIDs)
+                    .eq(Product::getTypeParent,'P');
+            List<Product> productList = this.list(lambdaQueryWrapper);
+
+            List<Long> productIDList = productList.stream().map(Product::getId).collect(Collectors.toList());
+
+            //根据商品id获取库存
+            List<GetWareListByProductIDListVO> wareList=wareClient.getWareListByProductIdByFeign(productIDList);
+            Map<Long, GetWareListByProductIDListVO> wareMap = wareList.stream().collect(Collectors.toMap(GetWareListByProductIDListVO::getProductId, Function.identity()));
 
 
-        List<GetWareDoctorFeignVO> doctorListByFeign = doctorClient.getDoctorByDeptByFeign(deptName);
-        long beforeSecond=dateSecond-86400;
-        //将医生的id提取出来方便查询
-        List<Long> doctorIDs = doctorListByFeign.stream().map(GetWareDoctorFeignVO::getId).collect(Collectors.toList());
-        Map<Long, GetWareDoctorFeignVO> doctorMap = doctorListByFeign.stream().collect(Collectors.toMap(GetWareDoctorFeignVO::getId, Function.identity()));
+            doctors = productList.stream().map(x -> {
+                GetWareDoctorFeignVO doctorOne = doctorMap.get(x.getDoctorId());
+                GetWareListByProductIDListVO wareOne = wareMap.get(x.getId());
 
-        //根据医生的id的list查询商品
-        LambdaQueryWrapper<Product> lambdaQueryWrapper=new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.between(Product::getDate,beforeSecond,dateSecond)
-                .in(Product::getDoctorId,doctorIDs)
-                .eq(Product::getTypeParent,'P');
-        List<Product> productList = this.list(lambdaQueryWrapper);
-
-        List<Long> productIDList = productList.stream().map(Product::getId).collect(Collectors.toList());
-
-        //根据商品id获取库存
-        List<GetWareListByProductIDListVO> wareList=wareClient.getWareListByProductIdByFeign(productIDList);
-        Map<Long, GetWareListByProductIDListVO> wareMap = wareList.stream().collect(Collectors.toMap(GetWareListByProductIDListVO::getProductId, Function.identity()));
-
-
-        List<GetWareProDuctListVO> doctors = productList.stream().map(x -> {
-            GetWareDoctorFeignVO doctorOne = doctorMap.get(x.getDoctorId());
-            GetWareListByProductIDListVO wareOne = wareMap.get(x.getId());
-
-            return new GetWareProDuctListVO(doctorOne.getId(), doctorOne.getTitle(),
-                    doctorOne.getRealName(), doctorOne.getAmount()
-                    , wareOne.getCount(), doctorOne.getIntroduce(), doctorOne.getSex(),x.getId()
-            , doctorOne.getAvatar());
-        }).collect(Collectors.toList());
+                return new GetWareProDuctListVO(doctorOne.getId(), doctorOne.getTitle(),
+                        doctorOne.getRealName(), doctorOne.getAmount()
+                        , wareOne.getCount(), doctorOne.getIntroduce(), doctorOne.getSex(),x.getId()
+                        , doctorOne.getAvatar());
+            }).collect(Collectors.toList());
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
 
 
         return ResponseResult.okResult(doctors);

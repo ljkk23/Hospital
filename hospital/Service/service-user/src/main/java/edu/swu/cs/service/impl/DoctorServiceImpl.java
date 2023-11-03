@@ -182,19 +182,25 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
 
     @Override
     public ResponseResult searchDoctorAndDept(SearchDoctorAndDeptModel searchDoctorAndDeptModel) {
-        //查询doctor
-        LambdaQueryWrapper<Doctor> docQueryWrapper=new LambdaQueryWrapper<>();
-        docQueryWrapper.like(Doctor::getRealName,searchDoctorAndDeptModel.getData())
-                .or().like(Doctor::getIntroduce,searchDoctorAndDeptModel.getData());
-        List<Doctor> doctorList = this.getBaseMapper().selectList(docQueryWrapper);
-        List<DoctorVO> doctorVOS = BeanCopyUtils.copyBeanList(doctorList, DoctorVO.class);
+        try {
 
-        //查询科室
-        List<String> deptNameList = deptCategoryService.searchDept(searchDoctorAndDeptModel.getData());
 
-        SearchDoctorAndDeptVo searchDoctorAndDeptVo=new SearchDoctorAndDeptVo(doctorVOS,deptNameList);
+            //查询doctor
+            LambdaQueryWrapper<Doctor> docQueryWrapper = new LambdaQueryWrapper<>();
+            docQueryWrapper.like(Doctor::getRealName, searchDoctorAndDeptModel.getData())
+                    .or().like(Doctor::getIntroduce, searchDoctorAndDeptModel.getData());
+            List<Doctor> doctorList = this.getBaseMapper().selectList(docQueryWrapper);
+            List<DoctorVO> doctorVOS = BeanCopyUtils.copyBeanList(doctorList, DoctorVO.class);
 
-        return ResponseResult.okResult(searchDoctorAndDeptVo);
+            //查询科室
+            List<String> deptNameList = deptCategoryService.searchDept(searchDoctorAndDeptModel.getData());
+
+            SearchDoctorAndDeptVo searchDoctorAndDeptVo = new SearchDoctorAndDeptVo(doctorVOS, deptNameList);
+
+            return ResponseResult.okResult(searchDoctorAndDeptVo);
+        }catch (Exception e){
+            return ResponseResult.errorResult(500,"没有该数据");
+        }
     }
 
     @Override

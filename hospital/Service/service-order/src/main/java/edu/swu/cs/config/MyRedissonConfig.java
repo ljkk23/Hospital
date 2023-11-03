@@ -17,7 +17,7 @@ public class MyRedissonConfig {
         //集群模式
         //config.useClusterServers().addNodeAddress("127.0.0.1:7004","127.0.0.1:7001");
         //单节点模式
-        config.useSingleServer().setAddress("redis://42.194.203.220:6379");
+        config.useSingleServer().setAddress("redis://127.0.0.1:6379");
         return Redisson.create(config);
     }
 }
